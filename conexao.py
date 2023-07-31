@@ -1,5 +1,12 @@
 from pymongo import MongoClient
+ 
+import json
 
-client = MongoClient("mongodb://localhost:27017/")
-database = client["openshift"]
-collection = database["series"]
+with open("appsettings.json") as user_file:
+  file_contents = user_file.read()
+
+connectionStrings = json.loads(file_contents)
+
+client = MongoClient(connectionStrings["ConnectionStrings"]["url"])
+database = client[connectionStrings["ConnectionStrings"]["database"]]
+collection = database[connectionStrings["ConnectionStrings"]["collection"]] 
