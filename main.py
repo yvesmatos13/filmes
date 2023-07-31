@@ -1,7 +1,7 @@
 from typing import Union
 
 import conexao
-import recomendacoesApi
+import recomendacoesApi 
 
 import json
 
@@ -10,38 +10,38 @@ from fastapi import FastAPI
 app = FastAPI()
 
 
-@app.get("/series")
-def getseries():
+@app.get("/filmes")
+def getFilmes():
     buscarRecomendacoes()
-    series = []
-    for serie in conexao.collection.find():
-        series.append({"nome": serie["nome"],
-                       "tipo": serie["tipo"]})
-    return series
+    filmes = []
+    for filme in conexao.collection.find():
+        filmes.append({"nome": filme["nome"],
+                       "tipo": filme["tipo"]})
+    return filmes
 
 
 def buscarRecomendacoes():
-    series = []
-    seriesNovas = []
-    for serie in conexao.collection.find():
-        series.append({"nome": serie["nome"],
-                       "tipo": serie["tipo"]})
-    if not series:
+    filmes = []
+    filmesNovos = []
+    for filme in conexao.collection.find():
+        filmes.append({"nome": filme["nome"],
+                       "tipo": filme["tipo"]})
+    if not filmes:
         for recomendacao in recomendacoesApi.recomendacoes:
-            if recomendacao["tipo"] == "serie":
-                series.append({"nome": recomendacao["nome"],
+            if recomendacao["tipo"] == "filme":
+                filmes.append({"nome": recomendacao["nome"],
                                "tipo": recomendacao["tipo"]})
-        conexao.collection.insert_many(series)
+        conexao.collection.insert_many(filmes)
 
     else:
         for recomendacao in recomendacoesApi.recomendacoes:
-            if recomendacao["tipo"] == "serie":
+            if recomendacao["tipo"] == "filme":
                 query = {"nome":recomendacao["nome"],"tipo":recomendacao["tipo"]}
-                for serie in conexao.collection.find(query):
-                    series.append({"nome": serie["nome"],
-                                   "tipo": serie["tipo"]})
-                if recomendacao["nome"] not in serie["nome"]:
-                    seriesNovas.append({"nome": recomendacao["nome"],
+                for filme in conexao.collection.find(query):
+                    filmes.append({"nome": filme["nome"],
+                                   "tipo": filme["tipo"]})
+                if recomendacao["nome"] not in filme["nome"]:
+                    filmesNovos.append({"nome": recomendacao["nome"],
                                         "tipo": recomendacao["tipo"]})
-        if seriesNovas:
-            conexao.collection.insert_many(seriesNovas)
+        if filmesNovos:
+            conexao.collection.insert_many(filmesNovos)
